@@ -1,0 +1,18 @@
+{
+  "key.msi.toggle": "Toggle Mob Spawn Indicator",
+  "category.msi": "Mob Spawn Indicator",
+  "button.msi.settings": "MSI",
+  "button.msi.settings.tooltip": "Mob Spawn Indicator Settings",
+  "screen.msi.settings": "Mob Spawn Indicator Settings",
+  "screen.msi.toggle": "Toggle Indicator",
+  "screen.msi.on": "§aIndicator: ON",
+  "screen.msi.off": "§cIndicator: OFF",
+  "screen.msi.danger_on": "§cShow Danger (light=0): ON",
+  "screen.msi.danger_off": "Show Danger (light=0): OFF",
+  "screen.msi.warning_on": "§eShow Warning (light=1): ON",
+  "screen.msi.warning_off": "Show Warning (light=1): OFF",
+  "screen.msi.safe_on": "§aShow Safe (light>=2): ON",
+  "screen.msi.safe_off": "Show Safe (light>=2): OFF",
+  "screen.msi.radius": "Render Radius: %s blocks",
+  "screen.msi.opacity": "Overlay Opacity: %s%%"
+}

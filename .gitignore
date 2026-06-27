@@ -1,0 +1,14 @@
+run/
+.eclipse/
+.idea/
+bin/
+.classpath
+*.iml
+.vscode/
+.kotlin/
+.gradle/
+build/
+logs/
+crash-reports/
+*.md
+!README.md

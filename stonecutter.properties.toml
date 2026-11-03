@@ -1,0 +1,82 @@
+# Centralized properties: https://stonecutter.kikugie.dev/wiki/config/properties
+# Sections are keyed by compile target (Minecraft version), shared by both loader nodes.
+
+mod.id = "msi"
+mod.name = "Mob Spawn Indicator"
+mod.group = "org.fnzero.msi"
+mod.version = "1.0.0"
+mod.license = "LGPL-3.0"
+mod.authors = "fnzero"
+mod.description = "Highlights mob spawn locations with color-coded overlays."
+
+# javafml language loader range (verify per line when a build complains)
+deps.fml_range = "[4,5)"
+
+deps.fabric_loader = "0.20.1"
+loomx.loom_version = "1.18-SNAPSHOT"
+
+["1.21"]
+mod.mc_compat = "[1.21,1.21.1)"
+mod.mc_releases = ["1.21"]
+deps.neo_loader = "21.0.167"
+deps.neo_range = "[21.0,21.1)"
+deps.fabric_api = "0.102.0+1.21"
+
+["1.21.1"]
+mod.mc_compat = "[1.21.1,1.21.2)"
+mod.mc_releases = ["1.21.1"]
+deps.neo_loader = "21.1.265"
+deps.neo_range = "[21.1,21.2)"
+deps.fabric_api = "0.116.17+1.21.1"
+
+# covers MC 1.21.2-1.21.3
+["1.21.3"]
+mod.mc_compat = "[1.21.2,1.21.4)"
+mod.mc_releases = ["1.21.2", "1.21.3"]
+deps.neo_loader = "21.3.100"
+deps.neo_range = "[21.2,22)"
+deps.fabric_api = "0.114.1+1.21.3"
+
+["1.21.4"]
+mod.mc_compat = "[1.21.4,1.21.5)"
+mod.mc_releases = ["1.21.4"]
+deps.neo_loader = "21.4.161"
+deps.neo_range = "[21.4,21.5)"
+deps.fabric_api = "0.119.4+1.21.4"
+
+["1.21.5"]
+mod.mc_compat = "[1.21.5,1.21.6)"
+mod.mc_releases = ["1.21.5"]
+deps.neo_loader = "21.5.101"
+deps.neo_range = "[21.5,21.6)"
+deps.fabric_api = "0.128.2+1.21.5"
+
+# covers MC 1.21.6-1.21.8
+["1.21.8"]
+mod.mc_compat = "[1.21.6,1.21.9)"
+mod.mc_releases = ["1.21.6", "1.21.7", "1.21.8"]
+deps.neo_loader = "21.8.57"
+deps.neo_range = "[21.6,22)"
+deps.fabric_api = "0.136.1+1.21.8"
+
+# covers MC 1.21.9-1.21.11
+["1.21.11"]
+mod.mc_compat = "[1.21.9,26.1)"
+mod.mc_releases = ["1.21.9", "1.21.10", "1.21.11"]
+deps.neo_loader = "21.11.48"
+deps.neo_range = "[21.9,22)"
+deps.fabric_api = "0.141.6+1.21.11"
+
+["26.1"]
+mod.mc_compat = "[26.1,26.2)"
+mod.mc_releases = ["26.1"]
+deps.neo_loader = "26.1.2.126"
+deps.neo_range = "[26.1,26.2)"
+deps.fabric_api = "0.155.3+26.1.2"
+
+["26.2"]
+mod.mc_compat = "[26.2,26.3)"
+mod.mc_releases = ["26.2"]
+deps.neo_loader = "26.2.0.93"
+deps.neo_range = "[26.2,26.3)"
+deps.fabric_api = "0.161.0+26.2"

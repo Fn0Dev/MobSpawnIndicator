@@ -1,0 +1,103 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+// Tag nodes with `<mc version>` and `<loader>` so stonecutter.properties.toml
+// sections like ["1.21.1"] resolve for both `1.21.1-fabric` and `1.21.1-neoforge`.
+val (mcTag, loaderTag) = sc.current.project.split('-')
+sc.properties.tags(mcTag, loaderTag)
+
+plugins {
+    id("net.neoforged.moddev") version "2.0.148"
+    id("neoforge-mutex")
+    id("org.jetbrains.kotlin.jvm") version "2.3.20"
+}
+
+version = "${sc.properties.get<String>("mod.version")}+${sc.current.version}"
+group = sc.properties["mod.group"] as String
+base { archivesName = sc.properties["mod.id"] as String }
+
+// MC 26.1+ requires Java 25; the 1.21.x line runs on Java 21
+val requiredJava: JavaVersion = when {
+    sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
+    else -> JavaVersion.VERSION_21
+}
+
+val kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:2.3.20"
+
+repositories {
+    mavenCentral()
+    maven("https://maven.neoforged.net/releases")
+}
+
+neoForge {
+    version = sc.properties["deps.neo_loader"] as String
+
+    mods {
+        register(sc.properties["mod.id"] as String) {
+            sourceSet(sourceSets.main.get())
+        }
+    }
+
+    runs {
+        register("client") {
+            client()
+            gameDirectory = file("../../run/")
+            jvmArguments.addAll(listOf("-Xms1G", "-Xmx2G"))
+        }
+    }
+}
+
+dependencies {
+    implementation(kotlinStdlib)
+    // NeoForge does not bundle Kotlin at runtime - ship it inside the mod jar
+    add("additionalRuntimeClasspath", kotlinStdlib)
+    jarJar(kotlinStdlib)
+}
+
+java {
+    sourceCompatibility = requiredJava
+    targetCompatibility = requiredJava
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = when (requiredJava) {
+            JavaVersion.VERSION_25 -> JvmTarget.JVM_25
+            else -> JvmTarget.JVM_21
+        }
+    }
+}
+
+tasks {
+    // Stonecutter preprocessing must run before ModDevGradle produces Minecraft artifacts
+    named("createMinecraftArtifacts") {
+        dependsOn("stonecutterGenerate")
+    }
+
+    processResources {
+        val props = buildMap {
+            put("mod_id", sc.properties["mod.id"] as String)
+            put("mod_name", sc.properties["mod.name"] as String)
+            put("mod_license", sc.properties["mod.license"] as String)
+            put("mod_authors", sc.properties["mod.authors"] as String)
+            put("mod_description", sc.properties["mod.description"] as String)
+            put("mod_version", sc.properties["mod.version"] as String)
+            put("minecraft_version_range", sc.properties["mod.mc_compat"] as String)
+            put("neoforge_version_range", sc.properties["deps.neo_range"] as String)
+            put("loader_version_range", sc.properties["deps.fml_range"] as String)
+        }
+        inputs.properties(props)
+        filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
+    }
+
+    register<Copy>("buildAndCollect") {
+        group = "build"
+        val modVersion = sc.properties.get<String>("mod.version")
+        description = "Copies the built jar into the root build/libs/$modVersion directory"
+        from(named<Jar>("jar").flatMap { it.archiveFile })
+        into(rootProject.layout.buildDirectory.file("libs/$modVersion"))
+    }
+}

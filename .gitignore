@@ -8,6 +8,8 @@ bin/
 .kotlin/
 .gradle/
 build/
+# Stonecutter node projects are generated from settings.gradle.kts
+versions/
 logs/
 crash-reports/
 *.md

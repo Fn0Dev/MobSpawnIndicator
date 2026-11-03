@@ -1,3 +1,4 @@
+//? if neoforge {
 package org.fnzero.msi.neoforge
 
 import net.minecraft.client.Minecraft
@@ -80,3 +81,4 @@ object NeoForgeEvents {
     )
   }
 }
+//?}

@@ -62,6 +62,16 @@ java {
     }
 }
 
+// The active node compiles shared sources raw (unpreprocessed), so the other
+// loader's package must be kept out of compilation explicitly.
+sourceSets {
+    main {
+        kotlin {
+            exclude("org/fnzero/msi/fabric/**")
+        }
+    }
+}
+
 kotlin {
     compilerOptions {
         jvmTarget = when (requiredJava) {
@@ -90,6 +100,7 @@ tasks {
             put("loader_version_range", sc.properties["deps.fml_range"] as String)
         }
         inputs.properties(props)
+        exclude("fabric.mod.json")
         filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
     }
 

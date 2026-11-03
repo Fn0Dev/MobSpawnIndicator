@@ -36,7 +36,7 @@ stonecutter {
         // Phase 4/5 roadmap (all 9 groups × both loaders):
         //   1.21 · 1.21.1 · 1.21.3[+1.21.2] · 1.21.4 · 1.21.5 ·
         //   1.21.8[+1.21.6,7] · 1.21.11[+1.21.9,10] · 26.1 · 26.2
-        match("1.21.1", "neoforge")
+        match("1.21.1", "fabric", "neoforge")
 
         vcsVersion = "1.21.1-neoforge"
     }

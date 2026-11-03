@@ -1,3 +1,4 @@
+//? if neoforge {
 package org.fnzero.msi.neoforge
 
 import net.neoforged.bus.api.IEventBus
@@ -25,3 +26,4 @@ class MobSpawnIndicator(mod_event_bus: IEventBus, mod_container: ModContainer) {
     NeoForge.EVENT_BUS.register(NeoForgeEvents)
   }
 }
+//?}

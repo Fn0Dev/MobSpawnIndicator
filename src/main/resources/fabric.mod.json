@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}+${minecraft_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Fn0Dev/MobSpawnIndicator",
+    "issues": "https://github.com/Fn0Dev/MobSpawnIndicator/issues",
+    "sources": "https://github.com/Fn0Dev/MobSpawnIndicator"
+  },
+  "license": "${mod_license}",
+  "icon": "msi_logo.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.fnzero.msi.fabric.MsiFabricClient"
+    ],
+    "modmenu": [
+      "org.fnzero.msi.fabric.MsiModMenu"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_compat_fabric}",
+    "java": ">=${java_version}"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

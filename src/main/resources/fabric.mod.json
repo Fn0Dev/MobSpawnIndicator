@@ -15,6 +15,9 @@
   "license": "${mod_license}",
   "icon": "msi_logo.png",
   "environment": "client",
+  "mixins": [
+    "MSI_MIXIN_CONFIGS"
+  ],
   "entrypoints": {
     "client": [
       "org.fnzero.msi.fabric.MsiFabricClient"

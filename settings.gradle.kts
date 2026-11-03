@@ -37,15 +37,15 @@ stonecutter {
         match("1.21.4", "fabric", "neoforge")
         match("1.21.5", "fabric", "neoforge")
         match("1.21.8", "fabric", "neoforge") // covers 1.21.6-1.21.8
-        // MC 1.21.9/1.21.10: fabric-api shipped no world-render hook (removed in
-        // the 1.21.9 render rework, restored in fabric-api 16.2 for 1.21.11), and
-        // the widget API flipped in 1.21.10 - so NeoForge gets separate nodes.
-        match("1.21.9", "neoforge") // covers 1.21.9
-        match("1.21.10", "neoforge") // covers 1.21.10
+        // MC 1.21.9/1.21.10 and 26.1: fabric-api ships no world-render hook, so
+        // the Fabric overlay uses a Kotlin mixin into the chunk render path.
+        match("1.21.9", "fabric", "neoforge") // covers 1.21.9
+        match("1.21.10", "fabric", "neoforge") // covers 1.21.10
         match("1.21.11", "fabric", "neoforge") // covers 1.21.11
-        // MC 26.1/26.2: fabric-api (rendering-v1 23.x/25.x) again shipped no
-        // world-render hook, so these are NeoForge-only until it returns.
-        match("26.1", "neoforge")
+        // MC 26.1: fabric-api (rendering-v1 23.x) again shipped no world-render
+        // hook; the Fabric overlay uses the same mixin. MC 26.2 is NeoForge-only
+        // (vanilla removed immediate-mode rendering entirely).
+        match("26.1", "fabric", "neoforge")
         match("26.2", "neoforge")
 
         vcsVersion = "1.21.1-neoforge"

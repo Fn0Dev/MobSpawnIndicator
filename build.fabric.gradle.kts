@@ -46,6 +46,9 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
     // Optional: only used by MsiModMenu, which Fabric Loader never loads without ModMenu
     modCompileOnly("com.terraformersmc:modmenu:${sc.properties.get<String>("deps.modmenu")}")
+    // Mixin annotations for the world-render hook on versions where fabric-api
+    // ships no world-render events (fabric-loader provides mixin at runtime)
+    compileOnly("net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7")
 
     // Fabric does not ship Kotlin or NightConfig - bundle them into the mod jar
     implementation(kotlinStdlib)
@@ -101,6 +104,11 @@ kotlin {
 
 tasks {
     processResources {
+        // The mixin config only exists on targets >= 1.21.9 (see the mixin class
+        // gates); a string placeholder keeps the raw fabric.mod.json valid JSON
+        // for Loom's mixin annotation processor.
+        val mixinConfig =
+            if (sc.current.parsed >= "1.21.9") "\"msi.mixins.json\"" else ""
         val props = buildMap {
             put("mod_id", sc.properties["mod.id"] as String)
             put("mod_name", sc.properties["mod.name"] as String)
@@ -112,9 +120,12 @@ tasks {
             put("minecraft_compat_fabric", sc.properties.get<String>("mod.mc_compat_fabric"))
             put("java_version", requiredJava.majorVersion)
         }
-        inputs.properties(props)
+        inputs.properties(props + mapOf("mixin_config" to mixinConfig))
         exclude("META-INF/neoforge.mods.toml")
-        filesMatching("fabric.mod.json") { expand(props) }
+        filesMatching("fabric.mod.json") {
+            expand(props)
+            filter { line -> line.replace("\"MSI_MIXIN_CONFIGS\"", mixinConfig) }
+        }
     }
 
     register<Copy>("buildAndCollect") {

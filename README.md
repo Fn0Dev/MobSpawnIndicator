@@ -10,11 +10,11 @@ Highlights block surfaces where hostile mobs can spawn using color-coded overlay
 | Loader   | Minecraft versions |
 |----------|--------------------|
 | NeoForge | 1.21 – 1.21.11, 26.1, 26.2 |
-| Fabric   | 1.21 – 1.21.8, 1.21.11 |
+| Fabric   | 1.21 – 1.21.11, 26.1 |
 
-Fabric builds for 1.21.9, 1.21.10, 26.1 and 26.2 are not provided: those fabric-api releases ship no
-world-render hook (it was removed during each of Mojang's rendering reworks and restored later), so
-the overlay cannot be drawn there. Use the NeoForge build for those versions.
+Fabric builds for 1.21.9, 1.21.10 and 26.1 draw the overlay through a small mixin into the chunk
+render path (fabric-api ships no world-render hook on those versions). MC 26.2 is NeoForge-only:
+vanilla removed the immediate-mode rendering the overlay draws with.
 
 ## Features
 

@@ -2,14 +2,25 @@
 package org.fnzero.msi.fabric
 
 import net.fabricmc.api.ClientModInitializer
+//? if >=26.1 {
+// fabric-api renamed the command builder and key-mapping helper for 26.x
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands as ClientCommandManager
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper as KeyBindingHelper
+//?} else {
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
+//?}
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 //? if >=1.21.11 {
-// fabric-api 16.x moved world events to a `world` subpackage with renamed stages
+//? if <26.1 {
+// fabric-api 16.2 (1.21.11) moved world events to a `world` subpackage with
+// renamed stages; 26.x ships no world-render events at all, so the overlay
+// hooks the chunk render path via a mixin there (see fabric/mixin).
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
-//?} else {
+//?}
+//?}
+//? if <=1.21.8 {
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 //?}
 import net.fabricmc.loader.api.FabricLoader
@@ -26,7 +37,11 @@ class MsiFabricClient : ClientModInitializer {
     MsiConfig.init(FabricLoader.getInstance().getConfigDir())
 
     MsiKeys.create()
+    //? if >=26.1 {
+    KeyBindingHelper.registerKeyMapping(MsiKeys.toggle_indicator)
+    //?} else {
     KeyBindingHelper.registerKeyBinding(MsiKeys.toggle_indicator)
+    //?}
 
     ClientTickEvents.START_CLIENT_TICK.register { _ ->
       while (MsiKeys.toggle_indicator.consumeClick()) MsiState.toggle()
@@ -34,6 +49,7 @@ class MsiFabricClient : ClientModInitializer {
     }
 
     //? if >=1.21.11 {
+    //? if <26.1 {
     WorldRenderEvents.BEFORE_TRANSLUCENT.register { ctx ->
       if (!MsiState.enabled || !MsiConfig.loaded) return@register
       val mc = Minecraft.getInstance()
@@ -43,7 +59,9 @@ class MsiFabricClient : ClientModInitializer {
         mc.renderBuffers().bufferSource(),
       )
     }
-    //?} else {
+    //?}
+    //?}
+    //? if <=1.21.8 {
     WorldRenderEvents.AFTER_TRANSLUCENT.register { ctx ->
       if (!MsiState.enabled || !MsiConfig.loaded) return@register
       val pose_stack = ctx.matrixStack() ?: return@register

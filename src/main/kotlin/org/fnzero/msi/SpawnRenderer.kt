@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.RenderType
 //?}
 //?}
 import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4f
 
 /**
  * Loader-agnostic overlay renderer: loaders call [client_tick] from their tick
@@ -97,6 +98,48 @@ object SpawnRenderer {
       )
   }
 
+  /**
+   * Fabric-only entry point for the `ChunkSectionsToRender.renderGroup` mixin:
+   * called right after translucent chunk sections are drawn on versions where
+   * fabric-api ships no world-render event. The vertex matrix is built from the
+   * camera rotation, matching what the level pose stack carries at this stage.
+   */
+  //? if >=1.21.9 {
+  //? if <26.2 {
+  fun fabric_after_translucent() {
+    if (!MsiState.enabled) return
+    if (!MsiConfig.loaded) return
+    if (pos_cache.isEmpty()) return
+
+    val mc = Minecraft.getInstance()
+    val camera = mc.gameRenderer.mainCamera
+    val cam = camera_pos(mc)
+    val matrix = Matrix4f().rotation(camera.rotation())
+    val alpha = MsiConfig.overlay_opacity.toFloat()
+
+    val buff_src = mc.renderBuffers().bufferSource()
+    val buffer = buff_src.getBuffer(OVERLAY_RENDER_TYPE)
+
+    for (result in pos_cache) {
+      val rgb =
+        when (result.level) {
+          SpawnLevel.RED -> RED
+          SpawnLevel.YELLOW -> YELLOW
+          SpawnLevel.GREEN -> GREEN
+        }
+
+      val x = result.pos.x.toDouble() - cam.x
+      val y = result.pos.y.toDouble() + 1.0 - cam.y
+      val z = result.pos.z.toDouble() - cam.z
+
+      draw_quad(buffer, matrix, x, y, z, rgb, alpha)
+    }
+
+    buff_src.endBatch(OVERLAY_RENDER_TYPE)
+  }
+  //?}
+  //?}
+
   //? if <26.2 {
   fun render_overlay(
     pose_stack: PoseStack,
@@ -129,24 +172,22 @@ object SpawnRenderer {
       val y = result.pos.y.toDouble() + 1.0 - camY
       val z = result.pos.z.toDouble() - camZ
 
-      add_quad(buffer, pose_stack, x, y, z, rgb, alpha)
+      draw_quad(buffer, pose_stack.last().pose(), x, y, z, rgb, alpha)
     }
 
     pose_stack.popPose()
     buff_src.endBatch(OVERLAY_RENDER_TYPE)
   }
 
-  private fun add_quad(
+  private fun draw_quad(
     buffer: VertexConsumer,
-    pose_stack: PoseStack,
+    matrix: org.joml.Matrix4f,
     x: Double,
     y: Double,
     z: Double,
     rgb: FloatArray,
     alpha: Float,
   ) {
-    val matrix = pose_stack.last().pose()
-
     val x0 = x.toFloat()
     val y0 = y.toFloat() + 0.002f
     val z0 = z.toFloat()

@@ -48,9 +48,18 @@ neoForge {
 
 dependencies {
     implementation(kotlinStdlib)
-    // NeoForge does not bundle Kotlin at runtime - ship it inside the mod jar
-    add("additionalRuntimeClasspath", kotlinStdlib)
-    jarJar(kotlinStdlib)
+
+    // NeoForge does not bundle Kotlin at runtime - ship it inside the mod jar.
+    // Newer NeoForge lines removed `additionalRuntimeClasspath` (implementation
+    // already feeds the dev runtime there) and their stub configuration throws
+    // on add, so both attachments are best-effort.
+    for (configName in listOf("additionalRuntimeClasspath", "jarJar")) {
+        try {
+            project.dependencies.add(configName, kotlinStdlib)
+        } catch (e: Exception) {
+            logger.lifecycle("msi: configuration $configName unavailable on ${sc.current.project}: ${e.message?.lineSequence()?.first()}")
+        }
+    }
 }
 
 java {
@@ -70,6 +79,21 @@ sourceSets {
             exclude("org/fnzero/msi/fabric/**")
         }
     }
+}
+
+// Stonecutter compiles the *active* node from the raw shared sources, where
+// version-gated blocks for other targets would not resolve. Force every node
+// (active included) to compile the preprocessed generated sources instead.
+val generatedSources = layout.buildDirectory.dir("generated/stonecutter/main")
+afterEvaluate {
+    val main = sourceSets.getByName("main")
+    val gen = generatedSources.get().asFile
+    main.java.setSrcDirs(listOf(File(gen, "java")))
+    main.resources.setSrcDirs(listOf(File(gen, "resources")))
+    (main.extensions.findByName("kotlin") as? SourceDirectorySet)?.setSrcDirs(listOf(File(gen, "kotlin")))
+}
+tasks.matching { it.name in setOf("compileKotlin", "compileJava", "processResources") }.configureEach {
+    dependsOn("stonecutterGenerate")
 }
 
 kotlin {

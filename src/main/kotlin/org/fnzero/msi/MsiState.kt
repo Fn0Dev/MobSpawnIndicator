@@ -20,18 +20,25 @@ object MsiState {
 
   private fun send_status() {
     val mc = Minecraft.getInstance()
-    mc.player?.sendSystemMessage(
+    val message =
       Component.literal(
         if (enabled) "\u00a7a[Mob Spawn Indicator] Enabled"
         else "\u00a7c[Mob Spawn Indicator] Disabled"
       )
-    )
+    //? if >=1.21.2 {
+    mc.player?.displayClientMessage(message, false)
+    //?} else {
+    mc.player?.sendSystemMessage(message)
+    //?}
   }
 
   fun send_status_reset() {
     val mc = Minecraft.getInstance()
-    mc.player?.sendSystemMessage(
-      Component.literal("\u00a7a[Mob Spawn Indicator] Config reset to defaults")
-    )
+    val message = Component.literal("\u00a7a[Mob Spawn Indicator] Config reset to defaults")
+    //? if >=1.21.2 {
+    mc.player?.displayClientMessage(message, false)
+    //?} else {
+    mc.player?.sendSystemMessage(message)
+    //?}
   }
 }

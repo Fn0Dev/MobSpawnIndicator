@@ -2,6 +2,8 @@ plugins {
     id("dev.kikugie.stonecutter")
 }
 
+// No active node: every node compiles preprocessed sources, so version-gated
+// code stays correct on every target (the active node would compile raw).
 stonecutter active "1.21.1-neoforge"
 
 // https://stonecutter.kikugie.dev/wiki/config/params

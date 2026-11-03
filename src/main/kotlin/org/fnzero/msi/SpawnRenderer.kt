@@ -6,8 +6,12 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
+//? if >=1.21.11 {
+import net.minecraft.client.renderer.rendertype.RenderTypes
+//?} else {
 import net.minecraft.client.renderer.RenderStateShard
 import net.minecraft.client.renderer.RenderType
+//?}
 import net.minecraft.world.phys.Vec3
 
 /**
@@ -19,6 +23,15 @@ object SpawnRenderer {
   private val YELLOW = floatArrayOf(1.0f, 1.0f, 0.2f)
   private val GREEN = floatArrayOf(0.2f, 1.0f, 0.2f)
 
+  //? if >=1.21.5 {
+  // Custom render type creation is package-private since the RenderPipeline
+  // rework; vanilla's translucent debug-quads type fits the overlay.
+  //? if >=1.21.11 {
+  private val OVERLAY_RENDER_TYPE = RenderTypes.debugQuads()
+  //?} else {
+  private val OVERLAY_RENDER_TYPE = RenderType.debugQuads()
+  //?}
+  //?} else {
   private val OVERLAY_RENDER_TYPE: RenderType =
     RenderType.create(
       "msi_spawn_overlay",
@@ -34,10 +47,21 @@ object SpawnRenderer {
         .setCullState(RenderStateShard.NO_CULL)
         .createCompositeState(false),
     )
+  //?}
 
   private var pos_cache: List<SpawnCheckResult> = emptyList()
   private var last_calc_tick = 0
   private const val CALC_INTERVAL = 5
+
+  /** Camera position; the accessor changed from field to method in MC 1.21.11. */
+  fun camera_pos(mc: Minecraft): Vec3 {
+    val camera = mc.gameRenderer.mainCamera
+    //? if >=1.21.11 {
+    return camera.position()
+    //?} else {
+    return camera.position
+    //?}
+  }
 
   fun client_tick() {
     if (!MsiState.enabled) return

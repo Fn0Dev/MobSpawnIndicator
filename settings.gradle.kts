@@ -31,12 +31,20 @@ stonecutter {
 
         // Compile targets are the LAST version of each API-compat group;
         // in-between patches are covered by each node's declared version range.
-        // NOTE: nodes are registered incrementally — a node's code must actually
-        // compile before it joins the aggregate build.
-        // Phase 4/5 roadmap (all 9 groups × both loaders):
-        //   1.21 · 1.21.1 · 1.21.3[+1.21.2] · 1.21.4 · 1.21.5 ·
-        //   1.21.8[+1.21.6,7] · 1.21.11[+1.21.9,10] · 26.1 · 26.2
+        match("1.21", "fabric", "neoforge")
         match("1.21.1", "fabric", "neoforge")
+        match("1.21.3", "fabric", "neoforge") // covers 1.21.2-1.21.3
+        match("1.21.4", "fabric", "neoforge")
+        match("1.21.5", "fabric", "neoforge")
+        match("1.21.8", "fabric", "neoforge") // covers 1.21.6-1.21.8
+        // MC 1.21.9/1.21.10: fabric-api shipped no world-render hook (removed in
+        // the 1.21.9 render rework, restored in fabric-api 16.2 for 1.21.11), and
+        // the widget API flipped in 1.21.10 - so NeoForge gets separate nodes.
+        match("1.21.9", "neoforge") // covers 1.21.9
+        match("1.21.10", "neoforge") // covers 1.21.10
+        match("1.21.11", "fabric", "neoforge") // covers 1.21.11
+        match("26.1", "fabric", "neoforge")
+        match("26.2", "fabric", "neoforge")
 
         vcsVersion = "1.21.1-neoforge"
     }

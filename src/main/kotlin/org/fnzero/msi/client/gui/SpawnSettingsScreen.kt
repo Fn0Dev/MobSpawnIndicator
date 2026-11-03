@@ -47,7 +47,7 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
         }
         .bounds(left, y, 220, 20)
         .build()
-    addRenderableWidget(danger_btn)
+        .also { addRenderableWidget(it) }
 
     y += 24
     warn_btn =
@@ -57,7 +57,7 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
         }
         .bounds(left, y, 220, 20)
         .build()
-    addRenderableWidget(warn_btn)
+        .also { addRenderableWidget(it) }
 
     y += 24
     safe_btn =
@@ -67,15 +67,15 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
         }
         .bounds(left, y, 220, 20)
         .build()
-    addRenderableWidget(safe_btn)
+        .also { addRenderableWidget(it) }
 
     y += 28
     radius_slider = RadiusSlider(left, y, 220, 20, MsiConfig.render_rad)
-    addRenderableWidget(radius_slider)
+      .also { addRenderableWidget(it) }
 
     y += 24
     opacity_slider = OpacitySlider(left, y, 220, 20, MsiConfig.overlay_opacity)
-    addRenderableWidget(opacity_slider)
+      .also { addRenderableWidget(it) }
 
     y += 32
     addRenderableWidget(

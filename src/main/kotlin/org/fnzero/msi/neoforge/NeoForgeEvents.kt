@@ -35,15 +35,29 @@ object NeoForgeEvents {
     SpawnRenderer.client_tick()
   }
 
+  // NeoForge 21.6+ fires each render stage as its own event subclass; older
+  // lines used a single event with a Stage enum. The camera is not carried by
+  // the newer events, so it is always read from the Minecraft client.
+  //? if >=1.21.6 {
+  @SubscribeEvent
+  fun on_render(event: RenderLevelStageEvent.AfterTranslucentBlocks) {
+    render_overlay(event.poseStack)
+  }
+  //?} else {
   @SubscribeEvent
   fun on_render(event: RenderLevelStageEvent) {
     if (event.stage != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return
+    render_overlay(event.poseStack)
+  }
+  //?}
+
+  private fun render_overlay(pose_stack: com.mojang.blaze3d.vertex.PoseStack) {
     if (!MsiState.enabled || !MsiConfig.loaded) return
 
     val mc = Minecraft.getInstance()
     SpawnRenderer.render_overlay(
-      event.poseStack,
-      mc.gameRenderer.mainCamera.position,
+      pose_stack,
+      SpawnRenderer.camera_pos(mc),
       mc.renderBuffers().bufferSource(),
     )
   }

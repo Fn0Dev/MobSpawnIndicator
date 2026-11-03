@@ -75,6 +75,21 @@ sourceSets {
     }
 }
 
+// Stonecutter compiles the *active* node from the raw shared sources, where
+// version-gated blocks for other targets would not resolve. Force every node
+// (active included) to compile the preprocessed generated sources instead.
+val generatedSources = layout.buildDirectory.dir("generated/stonecutter/main")
+afterEvaluate {
+    val main = sourceSets.getByName("main")
+    val gen = generatedSources.get().asFile
+    main.java.setSrcDirs(listOf(File(gen, "java")))
+    main.resources.setSrcDirs(listOf(File(gen, "resources")))
+    (main.extensions.findByName("kotlin") as? SourceDirectorySet)?.setSrcDirs(listOf(File(gen, "kotlin")))
+}
+tasks.matching { it.name in setOf("compileKotlin", "compileJava", "processResources") }.configureEach {
+    dependsOn("stonecutterGenerate")
+}
+
 kotlin {
     compilerOptions {
         jvmTarget = when (requiredJava) {

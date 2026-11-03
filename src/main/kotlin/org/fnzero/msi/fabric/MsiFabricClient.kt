@@ -6,7 +6,11 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
+//? if >=1.21.11 {
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
+//?} else {
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
+//?}
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
@@ -28,16 +32,28 @@ class MsiFabricClient : ClientModInitializer {
       SpawnRenderer.client_tick()
     }
 
+    //? if >=1.21.11 {
+    WorldRenderEvents.BEFORE_TRANSLUCENT.register { ctx ->
+      if (!MsiState.enabled || !MsiConfig.loaded) return@register
+      val mc = Minecraft.getInstance()
+      SpawnRenderer.render_overlay(
+        ctx.matrices(),
+        SpawnRenderer.camera_pos(mc),
+        mc.renderBuffers().bufferSource(),
+      )
+    }
+    //?} else {
     WorldRenderEvents.AFTER_TRANSLUCENT.register { ctx ->
       if (!MsiState.enabled || !MsiConfig.loaded) return@register
       val pose_stack = ctx.matrixStack() ?: return@register
       val mc = Minecraft.getInstance()
       SpawnRenderer.render_overlay(
         pose_stack,
-        ctx.camera().position,
+        SpawnRenderer.camera_pos(mc),
         mc.renderBuffers().bufferSource(),
       )
     }
+    //?}
 
     ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
       dispatcher.register(

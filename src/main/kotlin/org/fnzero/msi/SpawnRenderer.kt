@@ -5,12 +5,15 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderStateShard
 import net.minecraft.client.renderer.RenderType
-import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.neoforge.client.event.ClientTickEvent
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent
+import net.minecraft.world.phys.Vec3
 
+/**
+ * Loader-agnostic overlay renderer: loaders call [client_tick] from their tick
+ * event and [render_overlay] from their world-render event.
+ */
 object SpawnRenderer {
   private val RED = floatArrayOf(1.0f, 0.2f, 0.2f)
   private val YELLOW = floatArrayOf(1.0f, 1.0f, 0.2f)
@@ -36,10 +39,9 @@ object SpawnRenderer {
   private var last_calc_tick = 0
   private const val CALC_INTERVAL = 5
 
-  @SubscribeEvent
-  fun on_client_tick(event: ClientTickEvent.Pre) {
-    if (!MobSpawnIndicator.enabled) return
-    if (!SpawnConfig.COMMON_SPEC.isLoaded) return
+  fun client_tick() {
+    if (!MsiState.enabled) return
+    if (!MsiConfig.loaded) return
 
     val mc = Minecraft.getInstance()
     val player = mc.player ?: return
@@ -49,41 +51,33 @@ object SpawnRenderer {
     if (curr_tick - last_calc_tick < CALC_INTERVAL) return
     last_calc_tick = curr_tick
 
-    val config = SpawnConfig.COMMON
     pos_cache =
       SpawnChecker.get_spawn_pos(
         level,
         player.position(),
-        config.render_rad.get(),
-        config.show_danger.get(),
-        config.show_warn.get(),
-        config.show_safe.get(),
+        MsiConfig.render_rad,
+        MsiConfig.show_danger,
+        MsiConfig.show_warn,
+        MsiConfig.show_safe,
       )
   }
 
-  @SubscribeEvent
-  fun on_render(event: RenderLevelStageEvent) {
-    if (event.stage != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return
-    if (!MobSpawnIndicator.enabled) return
-    if (!SpawnConfig.COMMON_SPEC.isLoaded) return
+  fun render_overlay(
+    pose_stack: PoseStack,
+    camera_pos: Vec3,
+    buff_src: MultiBufferSource.BufferSource,
+  ) {
+    if (!MsiState.enabled) return
+    if (!MsiConfig.loaded) return
     if (pos_cache.isEmpty()) return
 
-    val mc = Minecraft.getInstance()
-    val player = mc.player ?: return
-
-    val alpha = SpawnConfig.COMMON.overlay_opacity.get().toFloat()
-
-    val camera = mc.gameRenderer.mainCamera
-    val cam_pos = camera.position
-
-    val pose_stack = event.poseStack
-    val buff_src = mc.renderBuffers().bufferSource()
+    val alpha = MsiConfig.overlay_opacity.toFloat()
 
     pose_stack.pushPose()
 
-    val camX = cam_pos.x
-    val camY = cam_pos.y
-    val camZ = cam_pos.z
+    val camX = camera_pos.x
+    val camY = camera_pos.y
+    val camZ = camera_pos.z
 
     val buffer = buff_src.getBuffer(OVERLAY_RENDER_TYPE)
 

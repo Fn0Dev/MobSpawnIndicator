@@ -5,8 +5,8 @@ import net.minecraft.client.gui.components.AbstractSliderButton
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
-import org.fnzero.msi.MobSpawnIndicator
-import org.fnzero.msi.SpawnConfig
+import org.fnzero.msi.MsiConfig
+import org.fnzero.msi.MsiState
 
 class SpawnSettingsScreen(private val last_screen: Screen? = null) :
   Screen(Component.translatable("screen.msi.settings")) {
@@ -21,19 +21,18 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
   private var show_safe = false
 
   override fun init() {
-    if (!SpawnConfig.COMMON_SPEC.isLoaded) return
+    if (!MsiConfig.loaded) return
 
-    val config = SpawnConfig.COMMON
-    show_danger = config.show_danger.get()
-    show_warn = config.show_warn.get()
-    show_safe = config.show_safe.get()
+    show_danger = MsiConfig.show_danger
+    show_warn = MsiConfig.show_warn
+    show_safe = MsiConfig.show_safe
 
     val left = width / 2 - 110
     var y = height / 2 - 70
 
     addRenderableWidget(
       Button.builder(toggle_msg()) { button ->
-          MobSpawnIndicator.enabled = !MobSpawnIndicator.enabled
+          MsiState.toggle()
           button.message = toggle_msg()
         }
         .bounds(left, y, 220, 20)
@@ -71,11 +70,11 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
     addRenderableWidget(safe_btn)
 
     y += 28
-    radius_slider = RadiusSlider(left, y, 220, 20, config.render_rad.get())
+    radius_slider = RadiusSlider(left, y, 220, 20, MsiConfig.render_rad)
     addRenderableWidget(radius_slider)
 
     y += 24
-    opacity_slider = OpacitySlider(left, y, 220, 20, config.overlay_opacity.get())
+    opacity_slider = OpacitySlider(left, y, 220, 20, MsiConfig.overlay_opacity)
     addRenderableWidget(opacity_slider)
 
     y += 32
@@ -96,7 +95,7 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
 
   private fun toggle_msg(): Component {
     return Component.translatable(
-      if (MobSpawnIndicator.enabled) "screen.msi.on" else "screen.msi.off"
+      if (MsiState.enabled) "screen.msi.on" else "screen.msi.off"
     )
   }
 
@@ -117,14 +116,13 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
   }
 
   private fun save() {
-    if (!SpawnConfig.COMMON_SPEC.isLoaded) return
-    val config = SpawnConfig.COMMON
-    config.show_danger.set(show_danger)
-    config.show_warn.set(show_warn)
-    config.show_safe.set(show_safe)
-    radius_slider?.let { config.render_rad.set(it.slide_val) }
-    opacity_slider?.let { config.overlay_opacity.set(it.slide_val) }
-    SpawnConfig.COMMON_SPEC.save()
+    if (!MsiConfig.loaded) return
+    MsiConfig.show_danger = show_danger
+    MsiConfig.show_warn = show_warn
+    MsiConfig.show_safe = show_safe
+    radius_slider?.let { MsiConfig.render_rad = it.slide_val }
+    opacity_slider?.let { MsiConfig.overlay_opacity = it.slide_val }
+    MsiConfig.save()
   }
 
   private class RadiusSlider(x: Int, y: Int, width: Int, height: Int, current: Int) :

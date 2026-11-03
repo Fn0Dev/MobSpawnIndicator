@@ -52,6 +52,7 @@ object NeoForgeEvents {
   //?}
 
   private fun render_overlay(pose_stack: com.mojang.blaze3d.vertex.PoseStack) {
+    //? if <26.2 {
     if (!MsiState.enabled || !MsiConfig.loaded) return
 
     val mc = Minecraft.getInstance()
@@ -60,6 +61,7 @@ object NeoForgeEvents {
       SpawnRenderer.camera_pos(mc),
       mc.renderBuffers().bufferSource(),
     )
+    //?}
   }
 
   @SubscribeEvent
@@ -67,7 +69,7 @@ object NeoForgeEvents {
     event.dispatcher.register(
       Commands.literal("msi").then(
         Commands.literal("settings").executes {
-          Minecraft.getInstance().setScreen(SpawnSettingsScreen())
+          SpawnSettingsScreen.open(Minecraft.getInstance())
           1
         }
       ).then(

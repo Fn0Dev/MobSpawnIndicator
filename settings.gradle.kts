@@ -43,8 +43,10 @@ stonecutter {
         match("1.21.9", "neoforge") // covers 1.21.9
         match("1.21.10", "neoforge") // covers 1.21.10
         match("1.21.11", "fabric", "neoforge") // covers 1.21.11
-        match("26.1", "fabric", "neoforge")
-        match("26.2", "fabric", "neoforge")
+        // MC 26.1/26.2: fabric-api (rendering-v1 23.x/25.x) again shipped no
+        // world-render hook, so these are NeoForge-only until it returns.
+        match("26.1", "neoforge")
+        match("26.2", "neoforge")
 
         vcsVersion = "1.21.1-neoforge"
     }

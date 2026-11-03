@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 //? if >=1.21.11 {
+// fabric-api 16.x moved world events to a `world` subpackage with renamed stages
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
 //?} else {
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
@@ -59,7 +60,7 @@ class MsiFabricClient : ClientModInitializer {
       dispatcher.register(
         ClientCommandManager.literal("msi").then(
           ClientCommandManager.literal("settings").executes { _ ->
-            Minecraft.getInstance().setScreen(SpawnSettingsScreen())
+            SpawnSettingsScreen.open(Minecraft.getInstance())
             1
           }
         ).then(

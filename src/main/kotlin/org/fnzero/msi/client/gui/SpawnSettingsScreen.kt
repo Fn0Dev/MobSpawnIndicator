@@ -1,6 +1,11 @@
 package org.fnzero.msi.client.gui
 
+import net.minecraft.client.Minecraft
+//? if >=26.1 {
+import net.minecraft.client.gui.GuiGraphicsExtractor
+//?} else {
 import net.minecraft.client.gui.GuiGraphics
+//?}
 import net.minecraft.client.gui.components.AbstractSliderButton
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
@@ -81,17 +86,25 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
     addRenderableWidget(
       Button.builder(Component.translatable("gui.done")) { _ ->
           save()
-          minecraft?.setScreen(last_screen)
+          minecraft?.let { show(it, last_screen) }
         }
         .bounds(left, y, 220, 20)
         .build()
     )
   }
 
+  // Screen drawing moved to the extraction model in MC 26.1.
+  //? if >=26.1 {
+  override fun extractRenderState(gui: GuiGraphicsExtractor, mouse_x: Int, mouse_y: Int, partial_tick: Float) {
+    super.extractRenderState(gui, mouse_x, mouse_y, partial_tick)
+    gui.centeredText(font, title, width / 2, 15, 0xFFFFFF)
+  }
+  //?} else {
   override fun render(gui: GuiGraphics, mouse_x: Int, mouse_y: Int, partial_tick: Float) {
     super.render(gui, mouse_x, mouse_y, partial_tick)
     gui.drawCenteredString(font, title, width / 2, 15, 0xFFFFFF)
   }
+  //?}
 
   private fun toggle_msg(): Component {
     return Component.translatable(
@@ -123,6 +136,21 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
     radius_slider?.let { MsiConfig.render_rad = it.slide_val }
     opacity_slider?.let { MsiConfig.overlay_opacity = it.slide_val }
     MsiConfig.save()
+  }
+
+  companion object {
+    /** Opens this screen over the current one; setScreen was renamed in MC 26.2. */
+    fun open(mc: Minecraft) {
+      show(mc, SpawnSettingsScreen())
+    }
+
+    fun show(mc: Minecraft, screen: Screen?) {
+      //? if >=26.2 {
+      if (screen != null) mc.setScreenAndShow(screen)
+      //?} else {
+      mc.setScreen(screen)
+      //?}
+    }
   }
 
   private class RadiusSlider(x: Int, y: Int, width: Int, height: Int, current: Int) :

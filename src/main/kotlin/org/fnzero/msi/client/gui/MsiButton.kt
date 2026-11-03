@@ -1,6 +1,10 @@
 package org.fnzero.msi.client.gui
 
+//? if >=26.1 {
+import net.minecraft.client.gui.GuiGraphicsExtractor
+//?} else {
 import net.minecraft.client.gui.GuiGraphics
+//?}
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.network.chat.Component
@@ -24,9 +28,13 @@ class MsiButton(x: Int, y: Int, width: Int, height: Int, on_click: () -> Unit) :
     setTooltip(Tooltip.create(TOOLTIP))
   }
 
-  // The widget draw hook was reworked in MC 1.21.11's mappings: AbstractButton
-  // made renderWidget final and renderContents became the draw hook.
-  //? if >=1.21.11 {
+  // The widget draw hook changed three times: renderWidget (pre-1.21.11),
+  // renderContents (1.21.11) and the 26.x extraction model (extractContents).
+  //? if >=26.1 {
+  override fun extractContents(gui: GuiGraphicsExtractor, mouse_x: Int, mouse_y: Int, partial_tick: Float) {
+    draw_icon(gui)
+  }
+  //?} else if >=1.21.11 {
   override fun renderContents(gui: GuiGraphics, mouse_x: Int, mouse_y: Int, partial_tick: Float) {
     draw_icon(gui)
   }
@@ -36,6 +44,22 @@ class MsiButton(x: Int, y: Int, width: Int, height: Int, on_click: () -> Unit) :
   }
   //?}
 
+  //? if >=26.1 {
+  private fun draw_icon(gui: GuiGraphicsExtractor) {
+    gui.blit(
+      RenderPipelines.GUI_TEXTURED,
+      TEXTURE,
+      this.x,
+      this.y,
+      0f,
+      0f,
+      this.width,
+      this.height,
+      this.width,
+      this.height,
+    )
+  }
+  //?} else {
   private fun draw_icon(gui: GuiGraphics) {
     //? if >=1.21.8 {
     gui.blit(
@@ -67,6 +91,7 @@ class MsiButton(x: Int, y: Int, width: Int, height: Int, on_click: () -> Unit) :
     gui.blit(TEXTURE, this.x, this.y, 0f, 0f, this.width, this.height, this.width, this.height)
     //?}
   }
+  //?}
 
   companion object {
     //? if >=1.21.11 {

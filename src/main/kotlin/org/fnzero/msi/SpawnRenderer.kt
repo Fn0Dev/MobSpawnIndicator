@@ -1,16 +1,18 @@
 package org.fnzero.msi
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.Minecraft
+//? if <26.2 {
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexFormat
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 //? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderTypes
 //?} else {
 import net.minecraft.client.renderer.RenderStateShard
 import net.minecraft.client.renderer.RenderType
+//?}
 //?}
 import net.minecraft.world.phys.Vec3
 
@@ -19,10 +21,14 @@ import net.minecraft.world.phys.Vec3
  * event and [render_overlay] from their world-render event.
  */
 object SpawnRenderer {
+  // MC 26.2 replaced immediate-mode vertex buffers with a submit-based render
+  // pipeline; porting the overlay to it is tracked as follow-up work, so the
+  // overlay draws only on pre-26.2 targets.
   private val RED = floatArrayOf(1.0f, 0.2f, 0.2f)
   private val YELLOW = floatArrayOf(1.0f, 1.0f, 0.2f)
   private val GREEN = floatArrayOf(0.2f, 1.0f, 0.2f)
 
+  //? if <26.2 {
   //? if >=1.21.5 {
   // Custom render type creation is package-private since the RenderPipeline
   // rework; vanilla's translucent debug-quads type fits the overlay.
@@ -48,14 +54,19 @@ object SpawnRenderer {
         .createCompositeState(false),
     )
   //?}
+  //?}
 
   private var pos_cache: List<SpawnCheckResult> = emptyList()
   private var last_calc_tick = 0
   private const val CALC_INTERVAL = 5
 
-  /** Camera position; the accessor changed from field to method in MC 1.21.11. */
+  /** Camera position; the accessor changed from field to method in MC 1.21.11+. */
   fun camera_pos(mc: Minecraft): Vec3 {
+    //? if >=26.2 {
+    val camera = mc.gameRenderer.mainCamera()
+    //?} else {
     val camera = mc.gameRenderer.mainCamera
+    //?}
     //? if >=1.21.11 {
     return camera.position()
     //?} else {
@@ -86,6 +97,7 @@ object SpawnRenderer {
       )
   }
 
+  //? if <26.2 {
   fun render_overlay(
     pose_stack: PoseStack,
     camera_pos: Vec3,
@@ -146,4 +158,5 @@ object SpawnRenderer {
     buffer.addVertex(matrix, x1, y0, z1).setColor(rgb[0], rgb[1], rgb[2], alpha)
     buffer.addVertex(matrix, x0, y0, z1).setColor(rgb[0], rgb[1], rgb[2], alpha)
   }
+  //?}
 }

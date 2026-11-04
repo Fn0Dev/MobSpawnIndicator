@@ -11,7 +11,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.3.20"
 }
 
-version = "${sc.properties.get<String>("mod.version")}+${sc.current.version}"
+version = "${sc.properties.get<String>("mod.version")}+${sc.current.version}-${loaderTag}"
 group = sc.properties["mod.group"] as String
 base { archivesName = sc.properties["mod.id"] as String }
 
@@ -118,7 +118,7 @@ tasks {
             put("mod_license", sc.properties["mod.license"] as String)
             put("mod_authors", sc.properties["mod.authors"] as String)
             put("mod_description", sc.properties["mod.description"] as String)
-            put("mod_version", sc.properties["mod.version"] as String)
+            put("mod_version", "${sc.properties.get<String>("mod.version")}+${sc.current.version}-${loaderTag}")
             put("minecraft_version_range", sc.properties["mod.mc_compat"] as String)
             put("neoforge_version_range", sc.properties["deps.neo_range"] as String)
             put("loader_version_range", sc.properties["deps.fml_range"] as String)

@@ -24,15 +24,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build all targets
-        run: ./gradlew build --stacktrace
-
-      - name: Collect jars
-        run: |
-          mkdir -p dist
-          find versions -path "*/build/libs/*.jar" ! -name "*-sources.jar" -exec cp {} dist/ \;
+        run: ./build.sh --stacktrace
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mod-jars
-          path: dist/*.jar
+          path: build/libs/**/*.jar

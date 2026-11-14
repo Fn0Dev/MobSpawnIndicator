@@ -8,7 +8,6 @@ import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceLocation
 //?}
 
-/** Holds the toggle keybind; registration is done by the loader entry. */
 object MsiKeys {
   lateinit var toggle_indicator: KeyMapping
     private set

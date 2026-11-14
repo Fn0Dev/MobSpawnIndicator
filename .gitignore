@@ -14,3 +14,4 @@ logs/
 crash-reports/
 *.md
 !README.md
+testall.sh

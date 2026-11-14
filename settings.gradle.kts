@@ -43,10 +43,8 @@ stonecutter {
         match("1.21.10", "fabric", "neoforge") // covers 1.21.10
         match("1.21.11", "fabric", "neoforge") // covers 1.21.11
         // MC 26.1: fabric-api (rendering-v1 23.x) again shipped no world-render
-        // hook; the Fabric overlay uses the same mixin. MC 26.2 is NeoForge-only
-        // (vanilla removed immediate-mode rendering entirely).
+        // hook; the Fabric overlay uses the same mixin.
         match("26.1", "fabric", "neoforge")
-        match("26.2", "neoforge")
 
         vcsVersion = "1.21.1-neoforge"
     }

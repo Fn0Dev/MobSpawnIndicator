@@ -17,9 +17,6 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
   Screen(Component.translatable("screen.msi.settings")) {
   private var radius_slider: RadiusSlider? = null
   private var opacity_slider: OpacitySlider? = null
-  private var danger_btn: Button? = null
-  private var warn_btn: Button? = null
-  private var safe_btn: Button? = null
 
   private var show_danger = true
   private var show_warn = true
@@ -45,34 +42,34 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
     )
 
     y += 28
-    danger_btn =
+    addRenderableWidget(
       Button.builder(danger_msg()) { button ->
           show_danger = !show_danger
           button.message = danger_msg()
         }
         .bounds(left, y, 220, 20)
         .build()
-        .also { addRenderableWidget(it) }
+    )
 
     y += 24
-    warn_btn =
+    addRenderableWidget(
       Button.builder(warn_msg()) { button ->
           show_warn = !show_warn
           button.message = warn_msg()
         }
         .bounds(left, y, 220, 20)
         .build()
-        .also { addRenderableWidget(it) }
+    )
 
     y += 24
-    safe_btn =
+    addRenderableWidget(
       Button.builder(safe_msg()) { button ->
           show_safe = !show_safe
           button.message = safe_msg()
         }
         .bounds(left, y, 220, 20)
         .build()
-        .also { addRenderableWidget(it) }
+    )
 
     y += 28
     radius_slider = RadiusSlider(left, y, 220, 20, MsiConfig.render_rad)
@@ -93,7 +90,6 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
     )
   }
 
-  // Screen drawing moved to the extraction model in MC 26.1.
   //? if >=26.1 {
   override fun extractRenderState(gui: GuiGraphicsExtractor, mouse_x: Int, mouse_y: Int, partial_tick: Float) {
     super.extractRenderState(gui, mouse_x, mouse_y, partial_tick)
@@ -106,27 +102,17 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
   }
   //?}
 
-  private fun toggle_msg(): Component {
-    return Component.translatable(
-      if (MsiState.enabled) "screen.msi.on" else "screen.msi.off"
-    )
-  }
+  private fun toggle_msg() =
+    Component.translatable(if (MsiState.enabled) "screen.msi.on" else "screen.msi.off")
 
-  private fun danger_msg(): Component {
-    return Component.translatable(
-      if (show_danger) "screen.msi.danger_on" else "screen.msi.danger_off"
-    )
-  }
+  private fun danger_msg() =
+    Component.translatable(if (show_danger) "screen.msi.danger_on" else "screen.msi.danger_off")
 
-  private fun warn_msg(): Component {
-    return Component.translatable(
-      if (show_warn) "screen.msi.warning_on" else "screen.msi.warning_off"
-    )
-  }
+  private fun warn_msg() =
+    Component.translatable(if (show_warn) "screen.msi.warning_on" else "screen.msi.warning_off")
 
-  private fun safe_msg(): Component {
-    return Component.translatable(if (show_safe) "screen.msi.safe_on" else "screen.msi.safe_off")
-  }
+  private fun safe_msg() =
+    Component.translatable(if (show_safe) "screen.msi.safe_on" else "screen.msi.safe_off")
 
   private fun save() {
     if (!MsiConfig.loaded) return
@@ -139,18 +125,9 @@ class SpawnSettingsScreen(private val last_screen: Screen? = null) :
   }
 
   companion object {
-    /** Opens this screen over the current one; setScreen was renamed in MC 26.2. */
-    fun open(mc: Minecraft) {
-      show(mc, SpawnSettingsScreen())
-    }
+    fun open(mc: Minecraft) = show(mc, SpawnSettingsScreen())
 
-    fun show(mc: Minecraft, screen: Screen?) {
-      //? if >=26.2 {
-      if (screen != null) mc.setScreenAndShow(screen)
-      //?} else {
-      mc.setScreen(screen)
-      //?}
-    }
+    fun show(mc: Minecraft, screen: Screen?) = mc.setScreen(screen)
   }
 
   private class RadiusSlider(x: Int, y: Int, width: Int, height: Int, current: Int) :

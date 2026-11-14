@@ -2,8 +2,6 @@
   "key.msi.toggle": "Toggle Mob Spawn Indicator",
   "category.msi": "Mob Spawn Indicator",
   "key.category.msi.main": "Mob Spawn Indicator",
-  "button.msi.settings": "MSI",
-  "button.msi.settings.tooltip": "Mob Spawn Indicator Settings",
   "screen.msi.settings": "Mob Spawn Indicator Settings",
   "screen.msi.toggle": "Toggle Indicator",
   "screen.msi.on": "§aIndicator: ON",

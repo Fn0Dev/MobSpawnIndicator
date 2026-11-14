@@ -9,6 +9,7 @@ plugins {
     id("net.neoforged.moddev") version "2.0.148"
     id("neoforge-mutex")
     id("org.jetbrains.kotlin.jvm") version "2.3.20"
+    id("com.modrinth.minotaur") version "2.10.0"
 }
 
 version = "${sc.properties.get<String>("mod.version")}+${sc.current.version}-${loaderTag}"
@@ -135,4 +136,27 @@ tasks {
         from(named<Jar>("jar").flatMap { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/$modVersion"))
     }
+}
+
+// Publish this node's jar: `./gradlew :1.21.1-neoforge:modrinthPublish`, or every
+// node at once with `./gradlew modrinthPublish`. Auth via the MODRINTH_TOKEN env
+// var; MODRINTH_DEBUG=1 performs a dry run instead of uploading.
+val mc_releases = (sc.properties["mod.mc_releases"] as String)
+    .split(',')
+    .map { it.trim() }
+modrinth {
+    projectId.set(sc.properties["modrinth.project"] as String)
+    versionNumber.set("${sc.properties.get<String>("mod.version")}+${sc.current.version}-${loaderTag}")
+    versionName.set("Mob Spawn Indicator ${sc.properties.get<String>("mod.version")} - MC ${mc_releases.joinToString("/")} ($loaderTag)")
+    versionType.set("release")
+    gameVersions.addAll(mc_releases)
+    loaders.add(loaderTag)
+    detectLoaders.set(false)
+    uploadFile.set(tasks.named<Jar>("jar"))
+    syncBodyFrom.set(rootProject.file("desc.md").readText())
+    changelog.set(
+        rootProject.file("changelog.md").takeIf { it.exists() }?.readText()
+            ?: "Mob Spawn Indicator ${sc.properties.get<String>("mod.version")}"
+    )
+    debugMode.set(providers.environmentVariable("MODRINTH_DEBUG").isPresent())
 }

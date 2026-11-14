@@ -8,6 +8,7 @@ sc.properties.tags(mcTag, loaderTag)
 plugins {
     id("dev.kikugie.loom-back-compat")
     id("org.jetbrains.kotlin.jvm") version "2.3.20"
+    id("com.modrinth.minotaur") version "2.10.0"
 }
 
 version = "${sc.properties.get<String>("mod.version")}+${sc.current.version}-${loaderTag}"
@@ -44,8 +45,12 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${sc.properties.get<String>("deps.fabric_loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
-    // Optional: only used by MsiModMenu, which Fabric Loader never loads without ModMenu
+    // Optional: only used by MsiModMenu, which Fabric Loader never loads without
+    // ModMenu. modRuntimeOnly installs it in the dev client so the mods-list
+    // config button is testable; it is never bundled into the shipped jar
+    // (only `include` does that) - pins are per-target in stonecutter.properties.toml.
     modCompileOnly("com.terraformersmc:modmenu:${sc.properties.get<String>("deps.modmenu")}")
+    modRuntimeOnly("com.terraformersmc:modmenu:${sc.properties.get<String>("deps.modmenu")}")
     // Mixin annotations for the world-render hook on versions where fabric-api
     // ships no world-render events (fabric-loader provides mixin at runtime)
     compileOnly("net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7")
@@ -134,5 +139,31 @@ tasks {
         description = "Copies the built jar into the root build/libs/$modVersion directory"
         from(loomx.modJar.flatMap { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/$modVersion"))
+    }
+}
+
+// Publish this node's jar: `./gradlew :1.21.1-fabric:modrinthPublish`, or every
+// node at once with `./gradlew modrinthPublish`. Auth via the MODRINTH_TOKEN env
+// var; MODRINTH_DEBUG=1 performs a dry run instead of uploading.
+val mc_releases = (sc.properties["mod.mc_releases"] as String)
+    .split(',')
+    .map { it.trim() }
+modrinth {
+    projectId.set(sc.properties["modrinth.project"] as String)
+    versionNumber.set("${sc.properties.get<String>("mod.version")}+${sc.current.version}-${loaderTag}")
+    versionName.set("Mob Spawn Indicator ${sc.properties.get<String>("mod.version")} - MC ${mc_releases.joinToString("/")} ($loaderTag)")
+    versionType.set("release")
+    gameVersions.addAll(mc_releases)
+    loaders.add(loaderTag)
+    detectLoaders.set(false)
+    uploadFile.set(loomx.modJar)
+    syncBodyFrom.set(rootProject.file("desc.md").readText())
+    changelog.set(
+        rootProject.file("changelog.md").takeIf { it.exists() }?.readText()
+            ?: "Mob Spawn Indicator ${sc.properties.get<String>("mod.version")}"
+    )
+    debugMode.set(providers.environmentVariable("MODRINTH_DEBUG").isPresent())
+    dependencies {
+        required.project("fabric-api")
     }
 }

@@ -1,10 +1,6 @@
 package org.fnzero.msi
 
 import net.minecraft.core.BlockPos
-//? if >=26.2 {
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.Identifier
-//?}
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LightLayer
@@ -20,13 +16,7 @@ enum class SpawnLevel {
 data class SpawnCheckResult(val pos: BlockPos, val level: SpawnLevel)
 
 object SpawnChecker {
-  // 26.x registry-fied entity types; earlier versions expose the constant directly.
-  //? if >=26.2 {
-  private val ZOMBIE: EntityType<*> =
-    BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("zombie"))
-  //?} else {
   private val ZOMBIE: EntityType<*> = EntityType.ZOMBIE
-  //?}
 
   fun get_spawn_pos(
     level: Level,

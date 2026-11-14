@@ -4,13 +4,6 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig
 import java.nio.file.Files
 import java.nio.file.Path
 
-/**
- * TOML config shared by both loaders, stored at `config/msi-common.toml`
- * with the same keys the mod has always used.
- *
- * [init] is called by the loader entry with its config directory
- * (NeoForge: `FMLPaths.CONFIGDIR`, Fabric: `FabricLoader#getConfigDir`).
- */
 object MsiConfig {
   private const val FILE_NAME = "msi-common.toml"
 
@@ -81,7 +74,6 @@ object MsiConfig {
     }
   }
 
-  /** Restores factory defaults and persists them. */
   fun reset_defaults() {
     render_rad = RADIUS_DEFAULT
     show_danger = true

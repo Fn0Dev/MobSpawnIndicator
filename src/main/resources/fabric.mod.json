@@ -13,7 +13,7 @@
     "sources": "https://github.com/Fn0Dev/MobSpawnIndicator"
   },
   "license": "${mod_license}",
-  "icon": "msi_logo.png",
+  "icon": "msi_icon.png",
   "environment": "client",
   "mixins": [
     "MSI_MIXIN_CONFIGS"

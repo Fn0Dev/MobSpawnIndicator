@@ -9,7 +9,7 @@ version = "${mod_version}"
 displayName = "${mod_name}"
 description = '''${mod_description}'''
 authors = "${mod_authors}"
-logoFile = "msi_logo.png"
+logoFile = "msi_banner.png"
 displayTest = "NONE"
 
 [[dependencies.${mod_id}]]

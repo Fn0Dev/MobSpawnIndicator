@@ -3,7 +3,6 @@ package org.fnzero.msi.fabric
 
 import net.fabricmc.api.ClientModInitializer
 //? if >=26.1 {
-// fabric-api renamed the command builder and key-mapping helper for 26.x
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands as ClientCommandManager
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper as KeyBindingHelper
 //?} else {
@@ -14,9 +13,6 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 //? if >=1.21.11 {
 //? if <26.1 {
-// fabric-api 16.2 (1.21.11) moved world events to a `world` subpackage with
-// renamed stages; 26.x ships no world-render events at all, so the overlay
-// hooks the chunk render path via a mixin there (see fabric/mixin).
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
 //?}
 //?}
@@ -78,7 +74,9 @@ class MsiFabricClient : ClientModInitializer {
       dispatcher.register(
         ClientCommandManager.literal("msi").then(
           ClientCommandManager.literal("settings").executes { _ ->
-            SpawnSettingsScreen.open(Minecraft.getInstance())
+            Minecraft.getInstance().execute {
+              SpawnSettingsScreen.open(Minecraft.getInstance())
+            }
             1
           }
         ).then(
